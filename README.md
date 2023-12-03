@@ -1,13 +1,17 @@
-## Foundry
+## Auction in Solidity using Foundry Framework.
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+**This repo contains the implementation of a Auction contract, where each item being auctioned is an `NFT Token` and the collateral is `ERC20 Token` determined by the seller of the `NFT`. The Auction also has an Openzeppelin implementation of the Transaparent Upgradeability Pattern.**
 
-Foundry consists of:
+# Contracts:
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+- **TokenizedVickeryAuction**: The main base Auction Contract, where sellers can create an Auction for the given `NFT Token` and a given `ERC20 Token` accepeted as Collateral.
+- **TokenizedVickeryAuctionV2**: The version 2 of `TokenizedVickeryAuction` which has an additional functionality of blacklisting a Seller.
+- **ERC721Mock**: A Mock implementation of ERC721 inheriting Openzeppelin ERC721 for testing prupose.
+- **ERC20Mock**: A Mock implemenatation of ERC20 taken from Openzeppelin for testing purpose.
+
+# Testing:
+
+- All the contracts are throughly tested with **100% Code coverage**. Check the coverage folder for a graphical overview of the coverage generated with `forge coverage` and `lcov & genhtml`.
 
 ## Documentation
 
