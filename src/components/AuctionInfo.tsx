@@ -78,20 +78,7 @@ function AuctionInfo() {
   useEffect(()=>{
     console.log("evenst updated the new events are",events);
   },[events])
-  // //list to the add item events
-  // useEffect(() => {
-
-  //   provider.watchContractEvent({
-  //     address: contractAddress,
-  //     abi: abi,
-  //     eventName: 'ItemAdded',
-  //     onLogs: (log: any) => {
-  //       console.log("log received on watch", log);
-  //       setEvents([...events, convertProxyToEventObject(log?.args)])
-  //     }
-  //   });
-  //   console.log("providers are sunning ", events);
-  // }, [provider])
+  
 
 
 
@@ -102,7 +89,7 @@ function AuctionInfo() {
         {data && !isLoading && <div> {`${data.formatted}.${data.decimals} ${data.symbol}`} </div>}
         <div>
           <ul>
-            {events && events.map((event, index) => <li key={index}> name:{event.itemName}, Quantity:{event.quantity},addedTime:{event.addedTime}</li>)}
+            {events && events.map((event, index) => <li key={index}>  name:{event.itemName},  Quantity:{event.quantity}, addedTime:{`${new Date(event.addedTime*1000)}`}</li>)}
           </ul>
         </div>
 
