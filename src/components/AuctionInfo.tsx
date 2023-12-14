@@ -1,69 +1,117 @@
-import { useAccount, useEnsName,usePublicClient,useBalance, useContractEvent, useWalletClient } from 'wagmi'
+import { useAccount, useEnsName, usePublicClient, useBalance, useContractEvent, useWalletClient } from 'wagmi'
 import AutionTable from './AuctionTable'
 import abi from '../config/abi.json';
 import { useEffect, useState } from 'react';
-import {ethers} from 'ethers';
+import { ethers } from 'ethers';
 function AuctionInfo() {
-    const { address, isConnected } = useAccount()
-   
-    const { data, isError, isLoading } = useBalance({
-      address: address,
-    })
-    const provider= usePublicClient();
-    const [events, setEvents] = useState([]);
-    const contractAddress:any= process.env.REACT_APP_CONTRACT_ADDRESS || "";
-    
-    const {data:signer}= useWalletClient();
-    useEffect(()=>{
-      console.log("This is the signer and provider information",signer,provider)
-      const fetchEvents = async () => {
-        try {
-          const eventFilter :any = {
-            address: contractAddress, // Replace with your contract address
-            topics: ["ItemAdded"], // Replace with the topics of your event
-            fromBlock: 'earliest', // Starting block
-            toBlock: 'latest', // Fetch up to the latest block
-          };
-  
-          const logs:any = await provider.getLogs(eventFilter);
-          // Process logs if needed
-          setEvents(logs);
-        } catch (error) {
-          console.error('Error fetching events:', error);
-        }
-      };
+  const { address, isConnected } = useAccount()
 
-      // const contract= new ethers.Contract(contractAddress,abi,provider);
-      // const listenToEvents = async () => {
-      //   const filter = contract.filters.ItemAdded()
-      //   const logs = await contract.queryFilter(filter)
-      //   logs.forEach(log => {
-      //     console.log(log) // log.args contains the ItemAdded event arguments
-      //   })
-      // }
-  
-      // listenToEvents()
-      provider.watchContractEvent({
-        address: contractAddress,
-        abi: abi,
-        eventName: 'ItemAdded',
-        onLogs:log=>console.log("this is the provider logs information",log),
-    
+  const { data, isError, isLoading } = useBalance({
+    address: address,
+  })
+  const provider = usePublicClient();
+  const [events, setEvents] = useState<any[]>([]);
+  const contractAddress: any = process.env.REACT_APP_CONTRACT_ADDRESS || "";
+
+
+  const convertProxyToEventObject=(args:any)=>{
+    let eventObject: any = {};
+    Object.keys(args.toObject()).forEach(key => {
+      //converting big int to number
+      if (typeof args[key] === 'bigint') {
+        eventObject[key] = Number(args[key]);
+      } else {
+        eventObject[key] =args[key];
+      }
+
+
+    });
+
+
+    return eventObject;
+  }
+
+
+  const unwatch=useContractEvent({
+    address: contractAddress,
+    abi: abi,
+    eventName: 'ItemAdded',
+    listener(logs: any){
+      console.log("log received on watch", logs);
+      let eventArgs: any[] = [];
+      logs.forEach((log:any)=> {
+        console.log("transformed information is ",log.args);
+        eventArgs.push({...log.args, quantity:Number(log.args.quantity),addedTime:Number(log.args.addedTime)});
       });
-  
-      //fetchEvents();
-    },[provider])
-  
-   
+      console.log("updated stack",[...events,...eventArgs])
+      setEvents([...events,...eventArgs]);
+    }
+  });
 
-    return <>
+
+
+  // fetch the past events which are already added to the contract
+  useEffect(() => {
+    const alcahemyProvider = new ethers.AlchemyProvider('sepolia', process.env.REACT_APP_ALCAHEMY_KEY);
+    const contract = new ethers.Contract(contractAddress, abi, alcahemyProvider);
+    const listenToEvents = async () => {
+      const filter = contract.filters.ItemAdded();
+      const logs: any[] = await contract.queryFilter(filter);
+      let eventArgs: any[] = [];
+      logs.forEach(log => {
+        console.log("transformed information is ",convertProxyToEventObject(log.args));
+        eventArgs.push(convertProxyToEventObject(log.args));
+      });
+      setEvents(eventArgs);
+    };
+    listenToEvents();
+
+
+    return ()=>{
+      // disconnect the event listener
+      if(unwatch) unwatch();
+    };
+    setInterval(()=>{
+
+    },2000)
+  }, []);
+
+
+
+  useEffect(()=>{
+    console.log("evenst updated the new events are",events);
+  },[events])
+  // //list to the add item events
+  // useEffect(() => {
+
+  //   provider.watchContractEvent({
+  //     address: contractAddress,
+  //     abi: abi,
+  //     eventName: 'ItemAdded',
+  //     onLogs: (log: any) => {
+  //       console.log("log received on watch", log);
+  //       setEvents([...events, convertProxyToEventObject(log?.args)])
+  //     }
+  //   });
+  //   console.log("providers are sunning ", events);
+  // }, [provider])
+
+
+
+  return <>
     {isConnected &&
-    <div>
-      <div>Your account address is {address}</div>
-        {data && <div> {`${data.formatted}.${data.decimals} ${data.symbol}`} </div>}
-        <AutionTable/>
+      <div>
+        <div>Your account address is {address}</div>
+        {data && !isLoading && <div> {`${data.formatted}.${data.decimals} ${data.symbol}`} </div>}
+        <div>
+          <ul>
+            {events && events.map((event, index) => <li key={index}> name:{event.itemName}, Quantity:{event.quantity},addedTime:{event.addedTime}</li>)}
+          </ul>
+        </div>
+
+        <AutionTable />
       </div>}
-    </>
+  </>
 }
 
 export default AuctionInfo;
