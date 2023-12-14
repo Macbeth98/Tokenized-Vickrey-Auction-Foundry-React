@@ -10,10 +10,13 @@
     "@types/node": "^16.18.68",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.17",
+    "ethers": "^6.9.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
+    "react-scripts": "^5.0.1",
+    "typescript": "^5.0.1",
+    "viem": "^1.19.13",
+    "wagmi": "^1.4.11",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -28,6 +31,11 @@
       "react-app/jest"
     ]
   },
+  "overrides": {
+    "react-scripts": {
+      "typescript": "^5.1.6"
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -39,5 +47,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0"
   }
 }
