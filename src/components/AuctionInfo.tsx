@@ -32,21 +32,22 @@ function AuctionInfo() {
   }
 
 
-  const unwatch=useContractEvent({
-    address: contractAddress,
-    abi: abi,
-    eventName: 'ItemAdded',
-    listener(logs: any){
-      console.log("log received on watch", logs);
-      let eventArgs: any[] = [];
-      logs.forEach((log:any)=> {
-        console.log("transformed information is ",log.args);
-        eventArgs.push({...log.args, quantity:Number(log.args.quantity),addedTime:Number(log.args.addedTime)});
-      });
-      console.log("updated stack",[...events,...eventArgs])
-      setEvents([...events,...eventArgs]);
-    }
-  });
+  // const unwatch=useContractEvent({
+  //   address: contractAddress,
+  //   abi: abi,
+  //   eventName: 'ItemAdded',
+  //   listener(logs: any){
+  //     console.log("log received on watch", logs);
+  //     let eventArgs: any[] = [];
+  //     logs.forEach((log:any)=> {
+  //       console.log("transformed information is ",log.args);
+  //       eventArgs.push({...log.args, quantity:Number(log.args.quantity),addedTime:Number(log.args.addedTime)});
+  //     });
+  //     let mergedEvents: any[]=eventArgs.concat(events);
+  //     console.log("new events are",mergedEvents)
+  //     setEvents(mergedEvents);
+  //   }
+  // });
 
 
 
@@ -66,10 +67,28 @@ function AuctionInfo() {
     };
     listenToEvents();
 
-
+    provider.watchContractEvent({
+      address: contractAddress,
+      abi: abi,
+      eventName: 'ItemAdded',
+      onLogs:(logs: any)=>{
+        console.log("log received on watch", logs);
+        let eventArgs: any[] = [];
+        logs.forEach((log:any)=> {
+          console.log("transformed information is ",log.args);
+          eventArgs.push({...log.args, quantity:Number(log.args.quantity),addedTime:Number(log.args.addedTime)});
+        });
+        setEvents(prevEvents => {
+          let mergedEvents = eventArgs.concat(prevEvents);
+          console.log("new events are", mergedEvents);
+          return mergedEvents;
+        });
+        
+      }
+    })
     return ()=>{
       // disconnect the event listener
-      if(unwatch) unwatch();
+      // if(unwatch) unwatch();
     };
   }, []);
 
@@ -89,7 +108,7 @@ function AuctionInfo() {
         {data && !isLoading && <div> {`${data.formatted}.${data.decimals} ${data.symbol}`} </div>}
         <div>
           <ul>
-            {events && events.map((event, index) => <li key={index}>  name:{event.itemName},  Quantity:{event.quantity}, addedTime:{`${new Date(event.addedTime*1000)}`}</li>)}
+            {events && events.sort((e1,e2)=>e2.addedTime-e1.addedTime).map((event, index) => <li key={index}>  name:{event.itemName},  Quantity:{event.quantity}, addedTime:{`${new Date(event.addedTime*1000)}`}</li>)}
           </ul>
         </div>
 

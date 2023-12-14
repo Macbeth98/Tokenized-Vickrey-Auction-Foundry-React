@@ -26,7 +26,7 @@ const AutionTable = ()=>{
     </tr>
    <tr>
     <th className='text-center' scope="row">2</th>
-      <td className='text-center text-danger' >Open</td>
+      <td className='text-center text-danger' >Closed</td>
       <td className='text-center' >12/12/2022</td>
       <td className='text-center' >100</td>
       <td  className='text-center' >12/12/2023</td>
