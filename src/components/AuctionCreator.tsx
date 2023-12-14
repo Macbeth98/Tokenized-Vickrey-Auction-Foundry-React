@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from 'react';
-import { start } from 'repl';
+import contracts from '../config/contracts.json';
 
 const AuctionCreator = () => {
 
@@ -12,7 +12,10 @@ const AuctionCreator = () => {
     const [reservePrice, setReservePrice] = useState(0);
     const [auctionsLoading, setAuctionsLoading] = useState(false);
     const [validationError,setValidationError] = useState('');
+    const ERC20='erc20';
+    const ERC721='erc721';
 
+    const [tokenType, setTokenType] = useState("");
 
     useEffect(()=>{
 
@@ -29,10 +32,14 @@ const AuctionCreator = () => {
     },[])
     const validateAuctionForm =()=>{
         let error="";
+        if(tokenType ==null || tokenType.length ===0 ){ 
+            error = error + `Token Type is required.`;
+        }
+
         if(tokenContract ==null || tokenContract.length ===0 ){
             error = error + `Token Contract is required.`;
         }
-        if(tokenId ==null || tokenId.length ===0 ){
+        if(tokenType === ERC721  && (tokenId ==null || tokenId.length ===0) ){
             error = error + "Token Id is required.";
         }   
         if(startTime ==null || startTime.length <=0 ){
@@ -64,7 +71,20 @@ const AuctionCreator = () => {
             console.log('bidPeriod',bidPeriod);
             console.log('revealPeriod',revealPeriod);
             console.log('reservePrice',reservePrice);
+            console.log('tokenType',tokenType);
             
+    }
+
+
+    const onTokenTypeChnage = (event:any)=>{
+        console.log("event is ",event.target.value);
+
+        if(event.target.value === ERC721){
+            setTokenContract(contracts.erc721[0].address);
+        }else{
+            setTokenContract(contracts.erc20[0].address);
+        }
+        setTokenType(event.target.value);
     }
     return (<>
 
@@ -77,19 +97,51 @@ const AuctionCreator = () => {
             {validationError && validationError?.length >0 && <div className="alert alert-danger" role="alert">
         Please resolve the following errors: {validationError}
 </div>}
-                <div className="mb-3">
+               <div className="mb-3">
+               <div className='form-check'><label className="form-label">Token Type</label></div>
+                <div className="form-check form-check-inline">
+                <input className="form-check-input" type="radio" name="tokenType" value={ERC20} id="erc20" onChange={onTokenTypeChnage}  checked={tokenType === ERC20}/>
+                <label className="form-check-label" >
+                    ERC20 Token
+                </label>
+                </div>
+                <div className="form-check form-check-inline">
+                <input className="form-check-input" type="radio" name="tokenType" value={ERC721} id="erc721" onChange={onTokenTypeChnage}  checked={tokenType === ERC721}/>
+                <label className="form-check-label">
+                    ERC721 Token
+                </label>
+                </div>
+               </div>
+                {tokenType === ERC721 && <>
+                
+                    <div className="mb-3">
                     <label  className="form-label">NFT Token Contract <span className='text-danger'>*</span></label>
-                    <input required type="text" className="form-control"  value={tokenContract} onChange={id=>setTokenContract(id.target.value)} id="tokenContract" placeholder="token contract"></input>
+                    <select className="form-select" aria-label="Select your ERC271 token" onChange={id=>{
+
+                        console.log("eslecte nft",id,id.target.value);
+                        setTokenContract(id.target.value);
+                    }}>
+                        {contracts.erc721.map(contract=> <option key={contract.address} value={contract.address}> {`${contract.name} (${contract.symbol})`}</option>)}
+                                              
+                    </select>
+
                 </div>
                 <div className="mb-3">
                     <label  className="form-label">NFT Token Id <span className='text-danger'>*</span></label>
                     <input required type="text" className="form-control" value={tokenId} onChange={id=>setTokenId(id.target.value) } id="tokenId" placeholder="token id"></input>
                 </div>
+                
+                </>}
 
-                <div className="mb-3">
+                {tokenType === ERC20 && <>
+                    <div className="mb-3">
                     <label  className="form-label">ERC 20 Token Contract <span className='text-danger'>*</span></label>
-                    <input required type="text" className="form-control"  value={tokenContract} onChange={id=>setTokenContract(id.target.value)} id="tokenContract" placeholder="token contract"></input>
+                    <select className="form-select" aria-label="Select your ERC 20 token" onChange={id=>setTokenContract(id.target.value)} value={tokenContract}>
+                        {contracts.erc20.map(contract=> <option key={contract.address} value={contract.address}> {`${contract.name} (${contract.symbol})`}</option>)}
+                                              
+                    </select>
                 </div>
+                </>}
             
 
                 <div className="mb-3">

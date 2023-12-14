@@ -71,9 +71,6 @@ function AuctionInfo() {
       // disconnect the event listener
       if(unwatch) unwatch();
     };
-    setInterval(()=>{
-
-    },2000)
   }, []);
 
 
