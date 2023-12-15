@@ -1,4 +1,4 @@
-import { useAccount, useEnsName, usePublicClient, useBalance, useContractEvent, useWalletClient } from 'wagmi'
+import { useAccount, useEnsName, usePublicClient, useBalance, useContractEvent, useWalletClient, useContractRead } from 'wagmi'
 import AutionTable from './AuctionTable'
 import abi from '../config/abi.json';
 import { useEffect, useState } from 'react';
@@ -14,14 +14,14 @@ function AuctionInfo() {
   const contractAddress: any = process.env.REACT_APP_CONTRACT_ADDRESS || "";
 
 
-  const convertProxyToEventObject=(args:any)=>{
+  const convertProxyToEventObject = (args: any) => {
     let eventObject: any = {};
     Object.keys(args.toObject()).forEach(key => {
       //converting big int to number
       if (typeof args[key] === 'bigint') {
         eventObject[key] = Number(args[key]);
       } else {
-        eventObject[key] =args[key];
+        eventObject[key] = args[key];
       }
 
 
@@ -56,13 +56,22 @@ function AuctionInfo() {
     const alcahemyProvider = new ethers.AlchemyProvider('sepolia', process.env.REACT_APP_ALCAHEMY_KEY);
     const contract = new ethers.Contract(contractAddress, abi, alcahemyProvider);
     const listenToEvents = async () => {
-      const filter = contract.filters.ItemAdded();
+      const filter = contract.filters.AuctionCreated();
       const logs: any[] = await contract.queryFilter(filter);
       let eventArgs: any[] = [];
-      logs.forEach(log => {
-        console.log("transformed information is ",convertProxyToEventObject(log.args));
-        eventArgs.push(convertProxyToEventObject(log.args));
+      logs.forEach(async (log) => {
+        console.log("transformed information is ", convertProxyToEventObject(log.args));
+        let eventObject: any = convertProxyToEventObject(log.args);
+        const contractInfo: any = await provider.readContract({
+          address: contractAddress,
+          abi: abi,
+          functionName: 'getAuction',
+          args: [eventObject.tokenContract, eventObject.tokenId],
+        });
+        console.log("contract info is", contractInfo);
+        eventArgs.push({ ...eventObject, contractInfo: { ...contractInfo, index: Number(contractInfo.index), numUnrevealedBids: Number(contractInfo.numUnrevealedBids), secondHighestBid: Number(contractInfo.secondHighestBid), highestBid: Number(contractInfo.highestBid) } });
       });
+
       setEvents(eventArgs);
     };
     listenToEvents();
@@ -70,34 +79,35 @@ function AuctionInfo() {
     provider.watchContractEvent({
       address: contractAddress,
       abi: abi,
-      eventName: 'ItemAdded',
-      onLogs:(logs: any)=>{
+      eventName: 'AuctionCreated',
+      onLogs: (logs: any) => {
         console.log("log received on watch", logs);
         let eventArgs: any[] = [];
-        logs.forEach((log:any)=> {
-          console.log("transformed information is ",log.args);
-          eventArgs.push({...log.args, quantity:Number(log.args.quantity),addedTime:Number(log.args.addedTime)});
+        logs.forEach((log: any) => {
+          console.log("transformed information is ", log.args);
+          eventArgs.push({ ...log.args, tokenId: Number(log.args.tokenId), reservePrice: Number(log.args.reservePrice), endTime: Number(log.args.endTime), autionIndex: Number(log.args.auctionIndex), startTime: Number(log.args.startTime) });
         });
         setEvents(prevEvents => {
           let mergedEvents = eventArgs.concat(prevEvents);
           console.log("new events are", mergedEvents);
           return mergedEvents;
         });
-        
+
       }
     })
-    return ()=>{
+    return () => {
       // disconnect the event listener
       // if(unwatch) unwatch();
+
     };
   }, []);
 
 
 
-  useEffect(()=>{
-    console.log("evenst updated the new events are",events);
-  },[events])
-  
+  useEffect(() => {
+    console.log("evenst updated the new events are", events);
+  }, [events])
+
 
 
 
@@ -106,13 +116,8 @@ function AuctionInfo() {
       <div>
         <div>Your account address is {address}</div>
         {data && !isLoading && <div> {`${data.formatted}.${data.decimals} ${data.symbol}`} </div>}
-        <div>
-          <ul>
-            {events && events.sort((e1,e2)=>e2.addedTime-e1.addedTime).map((event, index) => <li key={index}>  name:{event.itemName},  Quantity:{event.quantity}, addedTime:{`${new Date(event.addedTime*1000)}`}</li>)}
-          </ul>
-        </div>
 
-        <AutionTable />
+        <AutionTable auctions={events} />
       </div>}
   </>
 }

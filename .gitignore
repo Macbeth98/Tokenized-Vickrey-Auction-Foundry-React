@@ -25,5 +25,4 @@ yarn-error.log*
 .env
 yarn.lock
 
-src/config/abi.json
 package-lock.json
