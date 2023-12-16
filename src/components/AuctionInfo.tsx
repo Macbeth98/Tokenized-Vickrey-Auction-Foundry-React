@@ -11,6 +11,7 @@ function AuctionInfo() {
   })
   const provider = usePublicClient();
   const [events, setEvents] = useState<any[]>([]);
+  const [mapBidEvents, setMapBidEvents] = useState<any>({});
   const contractAddress: any = process.env.REACT_APP_CONTRACT_ADDRESS || "";
 
 
@@ -49,6 +50,45 @@ function AuctionInfo() {
   //   }
   // });
 
+  const getContractInfo = async (eventObject: any) => {
+    const contractInfo: any = await provider.readContract({
+      address: contractAddress,
+      abi: abi,
+      functionName: 'getAuction',
+      args: [eventObject.tokenContract, eventObject.tokenId],
+    });
+    console.log("contract info is", contractInfo);
+    if (Number(contractInfo.index) !== Number(eventObject.auctionIndex)) {
+      console.log("index mismatch.... Old Auction");
+      contractInfo.status = false;
+      contractInfo.endOfRevealPeriod = eventObject.endTime;
+    }
+    return {eventObject, contractInfo};
+  }
+
+
+  const getBidEvents = async (logs: any[]) => {
+    const mapBids: {[key: string]: number} = mapBidEvents;
+
+    for (const log of logs) {
+
+      const eventObj = log.args
+
+      console.log("Bids Events Object...", eventObj);
+
+      const key = `${eventObj.tokenContract}-${eventObj.tokenId}-${Number(eventObj.auctionIndex)}`;
+
+      if (mapBids[key]) {
+        mapBids[key] = mapBids[key] + 1;
+      } else {
+        mapBids[key] = 1;
+      }
+
+    }
+
+    console.log("Bids Events Object...", mapBids);
+    return mapBids;
+  }
 
 
   // fetch the past events which are already added to the contract
@@ -62,30 +102,27 @@ function AuctionInfo() {
       logs.forEach(async (log) => {
         console.log("transformed information is ", convertProxyToEventObject(log.args));
         let eventObject: any = convertProxyToEventObject(log.args);
-        const contractInfo: any = await provider.readContract({
-          address: contractAddress,
-          abi: abi,
-          functionName: 'getAuction',
-          args: [eventObject.tokenContract, eventObject.tokenId],
-        });
-        console.log("contract info is", contractInfo);
+        const {contractInfo} = await getContractInfo(eventObject);
         eventArgs.push({ ...eventObject, contractInfo: { ...contractInfo, index: Number(contractInfo.index), numUnrevealedBids: Number(contractInfo.numUnrevealedBids), secondHighestBid: Number(contractInfo.secondHighestBid), highestBid: Number(contractInfo.highestBid) } });
       });
 
       setEvents(eventArgs);
     };
+
     listenToEvents();
 
     provider.watchContractEvent({
       address: contractAddress,
       abi: abi,
       eventName: 'AuctionCreated',
-      onLogs: (logs: any) => {
+      onLogs: async (logs: any) => {
         console.log("log received on watch", logs);
         let eventArgs: any[] = [];
-        logs.forEach((log: any) => {
+        logs.forEach(async (log: any) => {
           console.log("transformed information is ", log.args);
-          eventArgs.push({ ...log.args, tokenId: Number(log.args.tokenId), reservePrice: Number(log.args.reservePrice), endTime: Number(log.args.endTime), autionIndex: Number(log.args.auctionIndex), startTime: Number(log.args.startTime) });
+          const {eventObject, contractInfo} = await getContractInfo(log.args);
+
+          eventArgs.push({ ...eventObject, contractInfo: { ...contractInfo, index: Number(contractInfo.index), numUnrevealedBids: Number(contractInfo.numUnrevealedBids), secondHighestBid: Number(contractInfo.secondHighestBid), highestBid: Number(contractInfo.highestBid) } });
         });
         setEvents(prevEvents => {
           let mergedEvents = eventArgs.concat(prevEvents);
@@ -95,6 +132,39 @@ function AuctionInfo() {
 
       }
     })
+
+
+    const listenToBidEvents = async () => {
+      const filter = contract.filters.BidCommitted();
+
+      const logs: any[] = await contract.queryFilter(filter);
+
+      const mapBidEvents = await getBidEvents(logs);
+
+      setMapBidEvents(mapBidEvents);
+    }
+
+    listenToBidEvents();
+
+    provider.watchContractEvent({
+      address: contractAddress,
+      abi: abi,
+      eventName: 'BidCommitted',
+      onLogs: async (logs: any) => {
+        console.log("Bid Events log received on watch", logs);
+        
+        const mapBids = await getBidEvents(logs);
+
+        
+
+        setMapBidEvents((prevMapBidEvents: any[]) => {
+          let mergedMapBidEvents = {...prevMapBidEvents, ...mapBids};
+          console.log("new Bid Events are", mergedMapBidEvents);
+          return mergedMapBidEvents;
+        });
+      }
+    });
+
     return () => {
       // disconnect the event listener
       // if(unwatch) unwatch();
@@ -117,7 +187,7 @@ function AuctionInfo() {
         <div>Your account address is {address}</div>
         {data && !isLoading && <div> {`${data.formatted}.${data.decimals} ${data.symbol}`} </div>}
 
-        <AutionTable auctions={events} />
+        <AutionTable auctions={events} mapBidEvents={mapBidEvents} />
       </div>}
   </>
 }
