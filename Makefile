@@ -27,6 +27,19 @@ deployERC721:
 	@echo "Deploying ERC721Tokens to $(NETWORK) network"
 	@forge script script/DeployErc721.s.sol:DeployErc721 $(NETWORK_ARGS)
 
+deployAuction:
+	@echo "Deploying Auction to $(NETWORK) network"
+	@forge script script/DeployAuction.s.sol:DeployAuction $(NETWORK_ARGS)
+
+
+deployProxyAdmin:
+	@echo "Deploying ProxyAdmin to $(NETWORK) network"
+	@forge script script/DeployProxyAdmin.s.sol:DeployProxyAdmin $(NETWORK_ARGS)
+
+deployProxy:
+	@echo "Deploying Proxy to $(NETWORK) network"
+	@forge script script/DeployProxy.s.sol:DeployProxy $(NETWORK_ARGS)
+
 test:
 	forge test
 
