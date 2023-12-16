@@ -1,0 +1,31 @@
+{
+  "erc721": [
+    {
+      "name": "Neo NEU ACUTION",
+      "address": "0xAE70944A7f2985c252CF2B5DAE1A095Aae24f5BD",
+      "symbol": "NNEU"
+    },
+    {
+      "name": "NEU AUCTION",
+      "address": "0xd410B199Ec1855B1638bf6E6a5C9Ba4b6da02A3e",
+      "symbol": "NEU"
+    }
+  ],
+  "erc20": [
+    {
+      "name": "MTR TOKEN",
+      "address": "0x2014f9D5084d484F3CFAC12cE22784aD63780a8f",
+      "symbol": "MTR"
+    },
+    {
+      "name": "TRM TOKEN",
+      "address": "0x32e41b8BA72709ddAD790Fd01600b333bBb07057",
+      "symbol": "TRM"
+    },
+    {
+      "name": "RMT TOKEN",
+      "address": "0xb4d35450f5e53D1aAAcd5D29cd4C6cCB4cDd8c01",
+      "symbol": "RMT"
+    }
+  ]
+}
