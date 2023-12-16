@@ -1,0 +1,769 @@
+[
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "TVA2__BLACKLISTED_SELLER",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA2__ONLY_OWNER",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__AUCTION_DOES_NOT_EXIST",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "startTime",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "endTime",
+				"type": "uint32"
+			}
+		],
+		"name": "TVA__AUCTION_EXISTS",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__AUCTION_EXISTS_NOT_ENDED",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "endTime",
+				"type": "uint32"
+			}
+		],
+		"name": "TVA__AUCTION_HAS_UNREVEALED_BIDS_AND_IS_IN_REVEAL_PERIOD",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__AUCTION_TOKEN_IS_NOT_APPROVED",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__AUCTION_TOKEN_IS_NOT_OWNED_BY_SELLER",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__BID_COLLATERAL_CANNOT_BE_ZERO",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__BID_COMMITMENT_CANNOT_BE_EMPTY",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__BID_NOT_ENOUGH_TOKEN_ALLOWANCE",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__BID_NOT_ENOUGH_TOKEN_BALANCE",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "endTime",
+				"type": "uint32"
+			}
+		],
+		"name": "TVA__BID_PERIOD_IS_OVER",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "startTime",
+				"type": "uint32"
+			}
+		],
+		"name": "TVA__BID_PERIOD_NOT_STARTED",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__CANNOT_CREATE_AUCTION_IN_THE_PAST",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__DEFINE_BID_REVEAL_PERIOD",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__END_AUCTION_ONLY_BY_SELLER",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__ERC20_TOKEN_ADDRESS_CANNOT_BE_ZERO",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__RESERVED_PRICE_CANNOT_BE_ZERO",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__REVEAL_BID_ALREADY_REVEALED",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__REVEAL_BID_COMMITMENT_NOT_FOUND",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__REVEAL_BID_COMMITMENT_VERIFICATION_FAILED",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "endTime",
+				"type": "uint32"
+			}
+		],
+		"name": "TVA__REVEAL_PERIOD_IS_OVER",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "startTime",
+				"type": "uint32"
+			}
+		],
+		"name": "TVA__REVEAL_PERIOD_NOT_STARTED",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__TOKEN_ADDRESS_CANNOT_BE_ZERO",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__WITHDRAW_COLLATERAL_BID_IS_HIGHEST_BIDDER",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__WITHDRAW_COLLATERAL_BID_NOT_FOUND",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__WITHDRAW_COLLATERAL_BID_NOT_REVEALED",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TVA__WITHDRAW_COLLATERAL_IS_ZERO",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "seller",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "startTime",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "endTime",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint96",
+				"name": "reservePrice",
+				"type": "uint96"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint64",
+				"name": "auctionIndex",
+				"type": "uint64"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "erc20Token",
+				"type": "address"
+			}
+		],
+		"name": "AuctionCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint96",
+				"name": "winningBid",
+				"type": "uint96"
+			}
+		],
+		"name": "AuctionEnded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "bidder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint64",
+				"name": "auctionIndex",
+				"type": "uint64"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint96",
+				"name": "collateral",
+				"type": "uint96"
+			}
+		],
+		"name": "BidCommitted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "bidder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint64",
+				"name": "auctionIndex",
+				"type": "uint64"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint96",
+				"name": "bidValue",
+				"type": "uint96"
+			}
+		],
+		"name": "BidRevealed",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "bidder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint64",
+				"name": "auctionIndex",
+				"type": "uint64"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint96",
+				"name": "collateral",
+				"type": "uint96"
+			}
+		],
+		"name": "CollateralWithdrawn",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "auctions",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "status",
+				"type": "bool"
+			},
+			{
+				"internalType": "address",
+				"name": "seller",
+				"type": "address"
+			},
+			{
+				"internalType": "uint32",
+				"name": "startTime",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "endOfBiddingPeriod",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "endOfRevealPeriod",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint64",
+				"name": "numUnrevealedBids",
+				"type": "uint64"
+			},
+			{
+				"internalType": "uint96",
+				"name": "highestBid",
+				"type": "uint96"
+			},
+			{
+				"internalType": "uint96",
+				"name": "secondHighestBid",
+				"type": "uint96"
+			},
+			{
+				"internalType": "address",
+				"name": "highestBidder",
+				"type": "address"
+			},
+			{
+				"internalType": "uint64",
+				"name": "index",
+				"type": "uint64"
+			},
+			{
+				"internalType": "address",
+				"name": "erc20Token",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint64",
+				"name": "",
+				"type": "uint64"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "bids",
+		"outputs": [
+			{
+				"internalType": "bytes20",
+				"name": "commitment",
+				"type": "bytes20"
+			},
+			{
+				"internalType": "uint96",
+				"name": "collateral",
+				"type": "uint96"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "seller",
+				"type": "address"
+			}
+		],
+		"name": "blacklistSeller",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes20",
+				"name": "commitment",
+				"type": "bytes20"
+			},
+			{
+				"internalType": "uint256",
+				"name": "erc20Tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "commitBid",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "erc20Token",
+				"type": "address"
+			},
+			{
+				"internalType": "uint32",
+				"name": "startTime",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "bidPeriod",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "revealPeriod",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint96",
+				"name": "reservePrice",
+				"type": "uint96"
+			}
+		],
+		"name": "createAuction",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "endAuction",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "getAuction",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "bool",
+						"name": "status",
+						"type": "bool"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"internalType": "uint32",
+						"name": "startTime",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "endOfBiddingPeriod",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "endOfRevealPeriod",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint64",
+						"name": "numUnrevealedBids",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint96",
+						"name": "highestBid",
+						"type": "uint96"
+					},
+					{
+						"internalType": "uint96",
+						"name": "secondHighestBid",
+						"type": "uint96"
+					},
+					{
+						"internalType": "address",
+						"name": "highestBidder",
+						"type": "address"
+					},
+					{
+						"internalType": "uint64",
+						"name": "index",
+						"type": "uint64"
+					},
+					{
+						"internalType": "address",
+						"name": "erc20Token",
+						"type": "address"
+					}
+				],
+				"internalType": "struct TokenizedVickeryAuction.Auction",
+				"name": "auction",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "isBlacklistedSeller",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint96",
+				"name": "bidValue",
+				"type": "uint96"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "nonce",
+				"type": "bytes32"
+			}
+		],
+		"name": "revealBid",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenContract",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint64",
+				"name": "auctionIndex",
+				"type": "uint64"
+			}
+		],
+		"name": "withdrawCollateral",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
