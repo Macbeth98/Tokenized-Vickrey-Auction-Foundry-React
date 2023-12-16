@@ -98,13 +98,16 @@ function AuctionInfo() {
     const listenToEvents = async () => {
       const filter = contract.filters.AuctionCreated();
       const logs: any[] = await contract.queryFilter(filter);
-      let eventArgs: any[] = [];
-      logs.forEach(async (log) => {
-        console.log("transformed information is ", convertProxyToEventObject(log.args));
-        let eventObject: any = convertProxyToEventObject(log.args);
+
+      const eventPromises = logs.map(async (log) => {
+        const eventObject: any = convertProxyToEventObject(log.args);
         const {contractInfo} = await getContractInfo(eventObject);
-        eventArgs.push({ ...eventObject, contractInfo: { ...contractInfo, index: Number(contractInfo.index), numUnrevealedBids: Number(contractInfo.numUnrevealedBids), secondHighestBid: Number(contractInfo.secondHighestBid), highestBid: Number(contractInfo.highestBid) } });
-      });
+        return ({ ...eventObject, contractInfo: { ...contractInfo, index: Number(contractInfo.index), numUnrevealedBids: Number(contractInfo.numUnrevealedBids), secondHighestBid: Number(contractInfo.secondHighestBid), highestBid: Number(contractInfo.highestBid) } });
+      })
+
+      const eventArgs = await Promise.all(eventPromises);
+
+      eventArgs.sort((a: any, b: any) => b.startTime - a.startTime);
 
       setEvents(eventArgs);
     };
@@ -117,13 +120,19 @@ function AuctionInfo() {
       eventName: 'AuctionCreated',
       onLogs: async (logs: any) => {
         console.log("log received on watch", logs);
-        let eventArgs: any[] = [];
-        logs.forEach(async (log: any) => {
+
+        const eventPromises = logs.map(async (log: any) => {
           console.log("transformed information is ", log.args);
           const {eventObject, contractInfo} = await getContractInfo(log.args);
 
-          eventArgs.push({ ...eventObject, contractInfo: { ...contractInfo, index: Number(contractInfo.index), numUnrevealedBids: Number(contractInfo.numUnrevealedBids), secondHighestBid: Number(contractInfo.secondHighestBid), highestBid: Number(contractInfo.highestBid) } });
+          return ({ ...eventObject, tokenId: Number(eventObject.tokenId), auctionIndex: Number(eventObject.auctionIndex), reservePrice: Number(eventObject.reservePrice), startTime: Number(eventObject.startTime), endTime: Number(eventObject.endTime), 
+             contractInfo: { ...contractInfo, index: Number(contractInfo.index), numUnrevealedBids: Number(contractInfo.numUnrevealedBids), secondHighestBid: Number(contractInfo.secondHighestBid), highestBid: Number(contractInfo.highestBid) } });
         });
+
+        const eventArgs = await Promise.all(eventPromises);
+
+        eventArgs.sort((a: any, b: any) => b.startTime - a.startTime);
+
         setEvents(prevEvents => {
           let mergedEvents = eventArgs.concat(prevEvents);
           console.log("new events are", mergedEvents);
@@ -176,7 +185,7 @@ function AuctionInfo() {
 
   useEffect(() => {
     console.log("evenst updated the new events are", events);
-  }, [events])
+  }, [events, mapBidEvents])
 
 
 
